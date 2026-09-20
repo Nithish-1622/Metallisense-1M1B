@@ -1,0 +1,271 @@
+Folder PATH listing for volume New Volume
+Volume serial number is D66E-BC9D
+K:.
+|   project-tree.txt
+|   README.md
+|   
++---Metallisense-Agent
+|   |   .gitignore
+|   |   analyze_dataset.py
+|   |   debug_anomaly.py
+|   |   postman.json
+|   |   quick_test.py
+|   |   README.md
+|   |   requirements.txt
+|   |   retrain_models.py
+|   |   setup.bat
+|   |   setup.py
+|   |   setup.sh
+|   |   start.bat
+|   |   test_agent_system.py
+|   |   test_copilot.py
+|   |   test_diagnostic.py
+|   |   
+|   +---app
+|   |   |   config.py
+|   |   |   main.py
+|   |   |   schemas.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---agents
+|   |   |       agent_manager.py
+|   |   |       alloy_agent.py
+|   |   |       alloy_agent_wrapper.py
+|   |   |       anomaly_agent.py
+|   |   |       anomaly_agent_wrapper.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---copilot
+|   |   |       groq_explainer.py
+|   |   |       schemas.py
+|   |   |       voice_service.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---data
+|   |   |       dataset.csv
+|   |   |       grade_specs.py
+|   |   |       synthetic_gen.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---inference
+|   |   |       alloy_predict.py
+|   |   |       anomaly_predict.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---policies
+|   |   |       decision_policy.py
+|   |   |       __init__.py
+|   |   |       
+|   |   \---training
+|   |           train_alloy_agent.py
+|   |           train_anomaly.py
+|   |           __init__.py
+|   |           
+|   \---DOCS
+|           AGENT_ARCHITECTURE.md
+|           AGENT_IMPLEMENTATION_SUMMARY.md
+|           AGENT_QUICKSTART.md
+|           API_ROUTES.md
+|           COPILOT_API_REFERENCE.md
+|           COPILOT_IMPLEMENTATION_SUMMARY.md
+|           COPILOT_SETUP.md
+|           FILE_LISTING.md
+|           FRONTEND_INTEGRATION_GUIDE.md
+|           IMPLEMENTATION_SUMMARY.md
+|           QUICKSTART.md
+|           QUICK_REFERENCE.md
+|           RETRAINING_INSTRUCTIONS.md
+|           
++---Metallisense-AI
+|   |   .gitignore
+|   |   eleven.py
+|   |   metallisense-node.pem
+|   |   MODEL_FIXES.md
+|   |   requirements.txt
+|   |   retrain.py
+|   |   retrain_quick.py
+|   |   setup.bat
+|   |   setup.py
+|   |   setup.sh
+|   |   start.bat
+|   |   test_api.py
+|   |   validate_models.py
+|   |   
+|   +---app
+|   |   |   config.py
+|   |   |   main.py
+|   |   |   schemas.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---agents
+|   |   |       alloy_agent.py
+|   |   |       anomaly_agent.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---data
+|   |   |       dataset.csv
+|   |   |       grades.json
+|   |   |       grade_specs.py
+|   |   |       synthetic_gen.py
+|   |   |       __init__.py
+|   |   |       
+|   |   +---inference
+|   |   |       alloy_predict.py
+|   |   |       anomaly_predict.py
+|   |   |       __init__.py
+|   |   |       
+|   |   \---training
+|   |           train_alloy_agent.py
+|   |           train_anomaly.py
+|   |           __init__.py
+|   |           
+|   \---DOCS
+|           DEPLOYMENT_CHECKLIST.md
+|           FILE_LISTING.md
+|           IMPLEMENTATION_SUMMARY.md
+|           QUICKSTART.md
+|           
++---Metallisense-frontend
+|   |   .gitignore
+|   |   AI_COPILOT_CHANGES.md
+|   |   index.html
+|   |   package-lock.json
+|   |   package.json
+|   |   postcss.config.js
+|   |   README.md
+|   |   tailwind.config.js
+|   |   vercel.json
+|   |   vite.config.js
+|   |   
+|   +---public
+|   |       vite.svg
+|   |       
+|   \---src
+|       |   App.css
+|       |   App.jsx
+|       |   index.css
+|       |   main.jsx
+|       |   
+|       +---assets
+|       |       image.png
+|       |       logo.png
+|       |       Metallisence2logo.png
+|       |       Metallisense-logo.png
+|       |       Metallisense3logo.png
+|       |       Metallisenselogo1.png
+|       |       react.svg
+|       |       
+|       +---components
+|       |   |   ProtectedRoute.jsx
+|       |   |   
+|       |   +---common
+|       |   |       AIChatInterface.jsx
+|       |   |       Badge.jsx
+|       |   |       Button.jsx
+|       |   |       Card.jsx
+|       |   |       ExplanationCard.jsx
+|       |   |       Input.jsx
+|       |   |       Modal.jsx
+|       |   |       Select.jsx
+|       |   |       Slider.jsx
+|       |   |       SyntheticGenerator.jsx
+|       |   |       Table.jsx
+|       |   |       
+|       |   \---layout
+|       |           MainLayout.jsx
+|       |           OPCStatusIndicator.jsx
+|       |           Sidebar.jsx
+|       |           TopBar.jsx
+|       |           
+|       +---config
+|       |       firebase.js
+|       |       
+|       +---context
+|       |       AuthContext.jsx
+|       |       GradeContext.jsx
+|       |       OPCContext.jsx
+|       |       
+|       +---pages
+|       |       AIAgent.jsx
+|       |       AnomalyDetection.jsx
+|       |       Dashboard.jsx
+|       |       GradeSpecs.jsx
+|       |       Login.jsx
+|       |       Recommendation.jsx
+|       |       SignUp.jsx
+|       |       Spectrometer.jsx
+|       |       SyntheticData.jsx
+|       |       TrainingData.jsx
+|       |       
+|       +---services
+|       |       aiService.js
+|       |       api.js
+|       |       copilotService.js
+|       |       gradeService.js
+|       |       gradeSpecService.js
+|       |       opcService.js
+|       |       spectrometerService.js
+|       |       trainingDataService.js
+|       |       
+|       \---utils
+|               constants.js
+|               formatters.js
+|               validators.js
+|               
+\---MetalliSense-Node-Backend
+    |   .gitignore
+    |   app.js
+    |   package-lock.json
+    |   package.json
+    |   server.js
+    |   test-gemini-integration.js
+    |   test-tts-integration.js
+    |   
+    +---config
+    |       firebase.js
+    |       
+    +---controllers
+    |       aiController.js
+    |       authController.js
+    |       errorController.js
+    |       firebaseAuthController.js
+    |       gradeSpecController.js
+    |       handlerFactory.js
+    |       metalGradeController.js
+    |       spectrometerController.js
+    |       syntheticController.js
+    |       trainingDataController.js
+    |       
+    +---middleware
+    |       firebaseAuthMiddleware.js
+    |       
+    +---models
+    |       gradeSpecModel.js
+    |       metalGradeModel.js
+    |       spectrometerReadingModel.js
+    |       trainingDataModel.js
+    |       userModel.js
+    |       
+    +---opcua-server
+    |       opcuaServer.js
+    |       
+    +---routes
+    |       aiRoutes.js
+    |       gradeSpecRoutes.js
+    |       metalGradeRoutes.js
+    |       spectrometerRoutes.js
+    |       syntheticRoutes.js
+    |       trainingDataRoutes.js
+    |       userRoutes.js
+    |       
+    +---services
+    |       aiService.js
+    |       geminiService.js
+    |       opcuaClient.js
+    |       opcuaService.js
+    |       userMetadataService.js
+    |       
+    \---utils
+            AppError.js
+            catchAsync.js
+            
