@@ -10,7 +10,7 @@
 
 **A responsible AI decision-support system that detects composition anomalies in real-time spectrometer data, recommends corrective alloy additions, and explains every decision in plain language — reducing material waste, energy consumption, and batch rejection in metal foundries.**
 
-[🌐 Live Application](https://metallisense.automconsultancy.in/) · [📹 Demo Video](Videos/Metallisense.mp4) · [📚 Agent Docs](Metallisense-Agent/DOCS/)
+[🌐 Live Application](https://metallisense.automconsultancy.in/) · [📹 Demo Video](https://drive.google.com/file/d/1YcFvbhEPZQXH12N0vtaymXmQ10tGVoB6/view?usp=drivesdk) · [📚 Agent Docs](Metallisense-Agent/DOCS/)
 
 </div>
 
@@ -80,7 +80,7 @@ The system is **advisory only**. It never acts autonomously. Every recommendatio
 </tr>
 </table>
 
-📹 **[Full Demo Video →](Videos/Metallisense.mp4)**
+📹 **[Full Demo Video →](https://drive.google.com/file/d/1YcFvbhEPZQXH12N0vtaymXmQ10tGVoB6/view?usp=drivesdk)**
 
 ---
 
