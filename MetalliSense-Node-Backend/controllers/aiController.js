@@ -4,6 +4,7 @@ const aiService = require('../services/aiService');
 const geminiService = require('../services/geminiService');
 const GradeSpec = require('../models/gradeSpecModel');
 const TrainingData = require('../models/trainingDataModel');
+const AnalysisResult = require('../models/analysisResultModel');
 
 // Anomaly Prediction
 // Frontend passes composition data (can be from /api/v2/synthetic/generate-synthetic or real spectrometer)
@@ -134,16 +135,45 @@ exports.analyzeWithAgent = catchAsync(async (req, res, next) => {
     composition,
   );
 
+  const agentResponse = agentResult.success
+    ? agentResult.data
+    : agentResult.fallback;
+
+  // Persist result to MongoDB (fire-and-forget on error so API never fails)
+  let savedResultId = null;
+  try {
+    const anomaly = agentResponse.anomaly_agent || {};
+    const alloy = agentResponse.alloy_agent || {};
+    const saved = await AnalysisResult.create({
+      userId: req.user ? req.user.uid : null,
+      metalGrade: metalGrade.toUpperCase(),
+      composition,
+      anomalyScore: anomaly.anomaly_score ?? null,
+      anomalySeverity: anomaly.severity ?? 'UNKNOWN',
+      anomalyConfidence: anomaly.confidence ?? null,
+      anomalyExplanation: anomaly.explanation ?? null,
+      recommendedAdditions: alloy.recommended_additions ?? {},
+      alloyConfidence: alloy.confidence ?? null,
+      alloyExplanation: alloy.explanation ?? null,
+      deviations: alloy.deviations ?? {},
+      finalNote: agentResponse.final_note ?? 'Human approval required before action',
+      serviceAvailable: agentResult.success,
+    });
+    savedResultId = saved._id;
+  } catch (persistErr) {
+    // Non-fatal — log and continue
+    console.error('AnalysisResult persist error:', persistErr.message);
+  }
+
   // Build response
   const response = {
     metalGrade: metalGrade.toUpperCase(),
     composition,
     aiAnalysis: {
       mode: 'agent',
-      agentResponse: agentResult.success
-        ? agentResult.data
-        : agentResult.fallback,
+      agentResponse,
       serviceAvailable: agentResult.success,
+      resultId: savedResultId,
     },
     timestamp: new Date(),
   };
@@ -157,6 +187,70 @@ exports.analyzeWithAgent = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: response,
+  });
+});
+
+// ============================================================================
+// ANALYSIS RESULT HISTORY & FEEDBACK (#4 + #5)
+// ============================================================================
+
+/**
+ * GET /api/v2/ai/results
+ * Return paginated analysis history for the authenticated user.
+ */
+exports.getAnalysisHistory = catchAsync(async (req, res, next) => {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+  const skip = (page - 1) * limit;
+
+  const filter = {};
+  if (req.user) filter.userId = req.user.uid;
+  if (req.query.grade) filter.metalGrade = req.query.grade.toUpperCase();
+  if (req.query.severity) filter.anomalySeverity = req.query.severity.toUpperCase();
+
+  const [results, total] = await Promise.all([
+    AnalysisResult.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    AnalysisResult.countDocuments(filter),
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      results,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+    },
+  });
+});
+
+/**
+ * PATCH /api/v2/ai/results/:id/feedback
+ * Operator confirms or rejects a recommendation.
+ * Body: { confirmed: boolean, notes?: string }
+ */
+exports.submitFeedback = catchAsync(async (req, res, next) => {
+  const { confirmed, notes } = req.body;
+
+  if (typeof confirmed !== 'boolean') {
+    return next(new AppError('confirmed (boolean) is required', 400));
+  }
+
+  const result = await AnalysisResult.findById(req.params.id);
+  if (!result) {
+    return next(new AppError('Analysis result not found', 404));
+  }
+
+  result.operatorConfirmed = confirmed;
+  result.operatorNotes = notes || null;
+  result.feedbackAt = new Date();
+  await result.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: { result },
   });
 });
 

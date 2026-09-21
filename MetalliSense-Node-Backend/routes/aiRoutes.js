@@ -20,6 +20,18 @@ router.post('/agent/analyze', protect, aiController.analyzeWithAgent);
 router.post('/anomaly/predict', protect, aiController.predictAnomaly);
 
 // ============================================
+// ANALYSIS HISTORY & OPERATOR FEEDBACK (#4 + #5)
+// ============================================
+
+// Get paginated analysis history (requires authentication)
+// Query params: page, limit, grade, severity
+router.get('/results', protect, aiController.getAnalysisHistory);
+
+// Submit operator feedback for a specific result (confirms/rejects recommendation)
+// Body: { confirmed: boolean, notes?: string }
+router.patch('/results/:id/feedback', protect, aiController.submitFeedback);
+
+// ============================================
 // GEMINI AI EXPLANATION ROUTES
 // ============================================
 

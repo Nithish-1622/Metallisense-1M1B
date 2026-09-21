@@ -110,7 +110,7 @@ class AlloyCorrectionAgentWrapper:
             
             # Filter out negligible additions (< 0.01%)
             filtered_additions = {
-                element: amount 
+                element: amount
                 for element, amount in ml_result["recommended_additions"].items()
                 if amount >= 0.01
             }
@@ -124,13 +124,17 @@ class AlloyCorrectionAgentWrapper:
                 additions=filtered_additions,
                 confidence=confidence
             )
+
+            # Per-element deviation from grade midpoint (structured, no LLM needed)
+            deviations = self.grade_generator.get_deviation_from_spec(grade, composition)
             
             # Return structured agent output
             return {
                 "agent": self.AGENT_NAME,
                 "recommended_additions": filtered_additions,
                 "confidence": float(confidence),
-                "explanation": explanation
+                "explanation": explanation,
+                "deviations": {k: round(v, 4) for k, v in deviations.items()},
             }
         
         except Exception as e:

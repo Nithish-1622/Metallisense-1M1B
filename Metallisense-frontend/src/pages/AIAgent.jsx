@@ -5,15 +5,17 @@ import Button from "../components/common/Button";
 import SyntheticGenerator from "../components/common/SyntheticGenerator";
 import ExplanationCard from "../components/common/ExplanationCard";
 import AIChatInterface from "../components/common/AIChatInterface";
-import { analyzeAgent } from "../services/aiService";
+import { analyzeAgent, submitFeedback } from "../services/aiService";
 import { getExplanation } from "../services/copilotService";
-import { Sparkles, Volume2, VolumeX, MessageCircle } from "lucide-react";
+import { Sparkles, Volume2, VolumeX, MessageCircle, ThumbsUp, ThumbsDown } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatPercentage } from "../utils/formatters";
 
 const AIAgent = () => {
   const [syntheticReading, setSyntheticReading] = useState(null);
   const [result, setResult] = useState(null);
+  const [resultId, setResultId] = useState(null);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [aiAvailable, setAIAvailable] = useState(true);
   const [aiExplanation, setAiExplanation] = useState(null);
   const [loadingExplanation, setLoadingExplanation] = useState(false);
@@ -23,10 +25,23 @@ const AIAgent = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const audioRef = useRef(null);
 
+  const handleFeedback = async (confirmed) => {
+    if (!resultId) return;
+    try {
+      await submitFeedback(resultId, { confirmed });
+      setFeedbackSubmitted(true);
+      toast.success(confirmed ? "Recommendation confirmed ✓" : "Recommendation rejected");
+    } catch {
+      toast.error("Failed to submit feedback");
+    }
+  };
+
   const handleGenerate = async (reading, params) => {
     console.log("AI Agent: handleGenerate called with:", { reading, params });
 
     setSyntheticReading(reading);
+    setResultId(null);
+    setFeedbackSubmitted(false);
     setAiExplanation(null);
     setCopilotExplanation(null);
     setAudioUrl(null);
@@ -46,6 +61,9 @@ const AIAgent = () => {
 
       const data = response.data.data;
       setResult(data);
+      if (data.aiAnalysis?.resultId) {
+        setResultId(data.aiAnalysis.resultId);
+      }
 
       // Auto-generate copilot explanation
       await generateCopilotExplanation(reading, data);
@@ -439,6 +457,41 @@ const AIAgent = () => {
                   </div>
                 )}
               </div>
+            </Card>
+          )}
+
+          {/* Operator Feedback */}
+          {resultId && (
+            <Card title="Operator Feedback">
+              {feedbackSubmitted ? (
+                <p className="text-sm text-dark-600 py-2">
+                  ✓ Feedback recorded. Thank you — this helps improve the model.
+                </p>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <p className="text-sm text-dark-600 flex-1">
+                    Did the AI recommendation look correct? Your feedback is used to improve future predictions.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="success"
+                      onClick={() => handleFeedback(true)}
+                      className="flex items-center gap-1"
+                    >
+                      <ThumbsUp className="w-4 h-4" />
+                      Confirm
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleFeedback(false)}
+                      className="flex items-center gap-1"
+                    >
+                      <ThumbsDown className="w-4 h-4" />
+                      Reject
+                    </Button>
+                  </div>
+                </div>
+              )}
             </Card>
           )}
 

@@ -9,11 +9,43 @@ Defines when agents are invoked and in what order
 🔐 Safety Rules:
     - Agents never call each other directly
     - Manager decides invocation order
-    - All decisions are logged
+    - All decisions are logged to rotating file
     - Human approval required for actions
 """
+import logging
+import sys
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 from typing import Dict, Optional
 from enum import Enum
+
+# ---------------------------------------------------------------------------
+# Audit logger — writes to logs/decisions.log with rotation
+# ---------------------------------------------------------------------------
+_LOG_DIR = Path(__file__).parent.parent.parent / "logs"
+_LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+_audit_logger = logging.getLogger("metallisense.decisions")
+if not _audit_logger.handlers:
+    _audit_logger.setLevel(logging.INFO)
+    # Rotating file: 5 MB per file, keep 5 backups
+    _file_handler = RotatingFileHandler(
+        _LOG_DIR / "decisions.log",
+        maxBytes=5 * 1024 * 1024,
+        backupCount=5,
+        encoding="utf-8",
+    )
+    _file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s [DECISION] %(message)s",
+            datefmt="%Y-%m-%dT%H:%M:%S%z",
+        )
+    )
+    _audit_logger.addHandler(_file_handler)
+    # Also mirror to stdout so existing console output is preserved
+    _stdout_handler = logging.StreamHandler(sys.stdout)
+    _stdout_handler.setFormatter(logging.Formatter("[DECISION POLICY] %(message)s"))
+    _audit_logger.addHandler(_stdout_handler)
 
 
 class SeverityLevel(Enum):
@@ -21,6 +53,7 @@ class SeverityLevel(Enum):
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
+    NORMAL = "NORMAL"
     ERROR = "ERROR"
 
 
@@ -177,14 +210,15 @@ class DecisionPolicy:
     @staticmethod
     def log_decision(decision: str, reason: str) -> None:
         """
-        Log decision for audit trail
-        
+        Log decision for audit trail.
+
+        Writes to logs/decisions.log (rotating, 5 MB × 5 files) and stdout.
+
         Args:
             decision: Decision made
             reason: Reason for decision
         """
-        # In production, this would log to a proper logging system
-        print(f"[DECISION POLICY] {decision} - Reason: {reason}")
+        _audit_logger.info("%s - Reason: %s", decision, reason)
 
 
 if __name__ == "__main__":

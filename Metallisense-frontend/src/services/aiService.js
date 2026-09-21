@@ -28,3 +28,20 @@ export const explainResult = (data) => api.post("/ai/explain", data);
 
 // Run what-if scenario analysis
 export const whatIfAnalysis = (data) => api.post("/ai/what-if", data);
+
+// ── Analysis History & Operator Feedback ─────────────────────────────────────
+
+/**
+ * Fetch paginated analysis history.
+ * @param {{ page?: number, limit?: number, grade?: string, severity?: string }} params
+ */
+export const getAnalysisHistory = (params = {}) =>
+  api.get("/ai/results", { params });
+
+/**
+ * Submit operator feedback for a saved analysis result.
+ * @param {string} resultId  - MongoDB _id returned in analyzeAgent response as resultId
+ * @param {{ confirmed: boolean, notes?: string }} feedback
+ */
+export const submitFeedback = (resultId, feedback) =>
+  api.patch(`/ai/results/${resultId}/feedback`, feedback);

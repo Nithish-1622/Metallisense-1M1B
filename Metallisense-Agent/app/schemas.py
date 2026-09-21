@@ -2,7 +2,7 @@
 Pydantic schemas for request/response validation
 """
 from typing import Dict, Optional
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, root_validator
 
 
 class Composition(BaseModel):
@@ -19,6 +19,15 @@ class Composition(BaseModel):
         if not 0 <= v <= 100:
             raise ValueError('Percentage must be between 0 and 100')
         return v
+
+    @root_validator(skip_on_failure=True)
+    def check_sum(cls, values):
+        total = sum(v for v in values.values() if isinstance(v, (int, float)))
+        if not (85.0 <= total <= 100.0):
+            raise ValueError(
+                f'Element percentages must sum to 85-100% (got {total:.2f}%)'
+            )
+        return values
 
 
 class AnomalyRequest(BaseModel):
@@ -82,6 +91,15 @@ class AgentComposition(BaseModel):
     P: Optional[float] = Field(0.0, ge=0, le=100)
     S: Optional[float] = Field(0.0, ge=0, le=100)
 
+    @root_validator(skip_on_failure=True)
+    def check_sum(cls, values):
+        total = sum(v for v in values.values() if isinstance(v, (int, float)))
+        if not (85.0 <= total <= 100.0):
+            raise ValueError(
+                f'Element percentages must sum to 85-100% (got {total:.2f}%)'
+            )
+        return values
+
 
 class AnomalyAgentInput(BaseModel):
     """Input schema for Anomaly Detection Agent"""
@@ -92,7 +110,7 @@ class AnomalyAgentOutput(BaseModel):
     """Output schema for Anomaly Detection Agent"""
     agent: str = Field(default="AnomalyDetectionAgent", description="Agent name")
     anomaly_score: float = Field(..., ge=0, le=1, description="Anomaly score (0-1)")
-    severity: str = Field(..., description="Severity: LOW, MEDIUM, HIGH")
+    severity: str = Field(..., description="Severity: NORMAL, LOW, MEDIUM, HIGH, ERROR")
     confidence: float = Field(..., ge=0, le=1, description="Confidence score")
     explanation: str = Field(..., description="Human-readable explanation")
 
@@ -109,6 +127,10 @@ class AlloyAgentOutput(BaseModel):
     recommended_additions: Dict[str, float] = Field(..., description="Element additions (percentage)")
     confidence: float = Field(..., ge=0, le=1, description="Confidence score")
     explanation: str = Field(..., description="Human-readable explanation")
+    deviations: Optional[Dict[str, float]] = Field(
+        None,
+        description="Per-element deviation from grade midpoint (positive = above target, negative = below)"
+    )
 
 
 class AgentAnalysisRequest(BaseModel):

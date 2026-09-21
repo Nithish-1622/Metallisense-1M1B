@@ -23,7 +23,6 @@ from typing import Dict, Optional
 from datetime import datetime, timezone
 
 sys.path.append(str(Path(__file__).parent.parent))
-
 from agents.anomaly_agent_wrapper import get_anomaly_agent
 from agents.alloy_agent_wrapper import get_alloy_agent
 from policies.decision_policy import DecisionPolicy
@@ -143,7 +142,8 @@ class AgentManager:
                 "agent": "AlloyCorrectionAgent",
                 "recommended_additions": {},
                 "confidence": 0.0,
-                "explanation": "Not invoked - anomaly severity below threshold (must be MEDIUM or HIGH)"
+                "explanation": "Not invoked - anomaly severity below threshold (must be MEDIUM or HIGH)",
+                "deviations": {},
             }
         
         # Step 3: Safety check
